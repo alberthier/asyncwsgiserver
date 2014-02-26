@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # Create the web server on port 8000
     port = 8000
     print("Open http://localhost:" + str(port))
-    asyncwsgiserver.WsgiServer("", 8000, hello_app)
+    asyncwsgiserver.WsgiServer("", port, hello_app)
     try:
         # Start asyncore's event loop
         asyncore.loop()
