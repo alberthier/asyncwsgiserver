@@ -64,7 +64,7 @@ class WsgiRequestHandler(asynchat.async_chat):
 
     def parse_header(self):
         lines = self.ibuffer.split(b"\r\n")
-        request_line = str(lines[0], "ascii").lstrip()
+        request_line = lines[0].decode("ascii").lstrip()
         lines = lines[1:]
         request_line.lstrip()
         request_parts = request_line.split()
@@ -81,7 +81,7 @@ class WsgiRequestHandler(asynchat.async_chat):
             self.environ["PATH_INFO"] = path
             self.environ["QUERY_STRING"] = ""
         for header in lines:
-            name, value = str(header, "ascii").split(':', 1)
+            name, value = header.decode("ascii").split(':', 1)
             value = value.strip()
             name = name.strip().replace('-', '_').upper()
             if name in ["CONTENT_LENGTH", "CONTENT_TYPE"]:
@@ -120,6 +120,13 @@ class WsgiServer(asyncore.dispatcher):
         self.set_reuse_addr()
         self.bind((self.host, port))
         self.listen(5)
+
+
+    def handle_accept(self):
+        """ For python 2 compatibility """
+        pair = self.accept()
+        if pair is not None:
+            self.handle_accepted(*pair)
 
 
     def handle_accepted(self, sock, addr):
